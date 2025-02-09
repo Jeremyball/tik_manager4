@@ -103,7 +103,7 @@ class Alembic(ExtractCore):
     def _extract_model(self):
         """Extract method for model category"""
         _file_path = self.resolve_output()
-        _flags = "-frameRange 0 0 -ro -uvWrite -worldSpace -writeUVSets -renderableOnly -writeVisibility -dataFormat ogawa"
+        _flags = "-frameRange 0 0 -ro -uvWrite -worldSpace -writeUVSets -renderableOnly -writeVisibility -dataFormat ogawa -root |asset"
         command = "{0} -file {1}".format(_flags, _file_path)
         cmds.AbcExport(j=command)
 
