@@ -7,13 +7,11 @@ from tik_manager4.dcc.extract_core import ExtractCore
 from tik_manager4.dcc.maya import utils
 
 
-
 class Alembic(ExtractCore):
     """Extract Alembic from Maya scene."""
 
     nice_name = "Alembic"
     color = (244, 132, 132)
-
 
     # these are the exposed settings in the UI
     # any metadata with the same key will OVERRIDE
@@ -33,7 +31,7 @@ class Alembic(ExtractCore):
                     "type": "integer",
                     "value": _ranges[3],
                 },
-                "sub_steps":{
+                "sub_steps": {
                     "display_name": "Sub Steps",
                     "type": "integer",
                     "value": 1,
@@ -93,12 +91,13 @@ class Alembic(ExtractCore):
 
         self._extension = ".abc"
         # Category names must match to the ones in category_definitions.json (case sensitive)
-        self.category_functions = {"Model": self._extract_model,
-                                   "Animation": self._extract_animation,
-                                   "Fx": self._extract_fx,
-                                   "Layout": self._extract_layout,
-                                   "Lighting": self._extract_lighting,
-                                   }
+        self.category_functions = {
+            "Model": self._extract_model,
+            "Animation": self._extract_animation,
+            "Fx": self._extract_fx,
+            "Layout": self._extract_layout,
+            "Lighting": self._extract_lighting,
+        }
 
     def _extract_model(self):
         """Extract method for model category"""
@@ -113,7 +112,7 @@ class Alembic(ExtractCore):
         _file_path = self.resolve_output()
         _start_frame = settings.get("start_frame")
         _end_frame = settings.get("end_frame")
-        step = float(1.0/settings.get("sub_steps"))
+        step = float(1.0 / settings.get("sub_steps"))
         _flags = f"-frameRange {_start_frame} {_end_frame} -step {step} -uvWrite -worldSpace -writeUVSets -renderableOnly -writeVisibility -dataFormat ogawa"
         command = f"{_flags} -file {_file_path}"
         cmds.AbcExport(j=command)
