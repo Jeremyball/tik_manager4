@@ -35,6 +35,7 @@ class Look(ExtractCore):
         }
 
     def _extract_model(self):
+        look_file = self.resolve_output().rpartition(".")[0] + ".look"
 
         ################
         # COLLECT mtls #
@@ -78,8 +79,6 @@ class Look(ExtractCore):
         ########################
         # WRITE look file data #
         ########################
-
-        look_file = self.resolve_output().rpartition(".")[0] + ".look"
 
         with open(look_file, "w") as f:
             json.dump(data, f, indent=4, sort_keys=True)
