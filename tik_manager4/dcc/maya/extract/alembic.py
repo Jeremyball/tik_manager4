@@ -20,6 +20,13 @@ class Alembic(ExtractCore):
     def __init__(self):
         _ranges = utils.get_ranges()
         exposed_settings = {
+            "Model":{
+                "anim_publish":{
+                    "display_name": "Anim Publish",
+                    "type": "boolean",
+                    "value": True,
+                }
+            },
             "Animation": {
                 "start_frame": {
                     "display_name": "Start Frame",

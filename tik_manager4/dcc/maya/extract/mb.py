@@ -49,7 +49,6 @@ class MayaBinary(ExtractCore):
         )
 
     def _extract_default(self):
-        print("\n\n\nusing this one\n\n\n")
         # select asset
         cmds.select("asset")
 
