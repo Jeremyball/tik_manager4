@@ -18,27 +18,17 @@ class Assembly(ExtractCore):
 
     def __init__(self):
         super().__init__()
-
-        # Category names must match to the ones in category_definitions.json (case sensitive)
+        self.extension = ".mb"
         self.category_functions = {
             "Model": self._extract_model,
-            "Animation": self._extract_animation,
-            "Fx": self._extract_fx,
-            "Layout": self._extract_layout,
-            "Lighting": self._extract_lighting,
+            "Rig": self._extract_rig,
         }
 
     def _extract_model(self):
-        publishes = os.listdir(self.extract_folder)
-        looks = []
-        alembics = []
 
-        # get look and alembic publishes
-        for i in publishes:
-            if "LOOK_" in i:
-                looks.append(i)
-            if "ALEMBIC_" in i:
-                alembics.append(i)
+        # get files
+        looks = self._get_files("LOOK", self.extract_folder)
+        alembics = self._get_files("ALEMBIC", self.extract_folder)
 
         # get latest alembics, mtls and link
         abc_file = self.extract_folder + "/" + alembics[-1]
@@ -78,17 +68,53 @@ class Assembly(ExtractCore):
         # open original file
         cmds.file(curr_file, open=True, force=True)
 
-    def _extract_animation(self):
-        pass
+    def _extract_rig(self):
 
-    def _extract_fx(self):
-        pass
+        model_publish_folder = self.extract_folder.replace("Rig", "Model")
 
-    def _extract_layout(self):
-        pass
+        # get files
+        looks = self._get_files("LOOK", model_publish_folder)
+        rig = self._get_files("MB", self.extract_folder)
 
-    def _extract_lighting(self):
-        pass
+        # get latest alembics, mtls and link
+        rig_file = self.extract_folder + "/" + rig[-1]
+        mtls_file = model_publish_folder + "/" + looks[-1]
+        link_file = model_publish_folder + "/" + looks[-2]
 
-    def _extract_default(self):
-        pass
+        # open new scene
+        cmds.file(new=True, ignoreVersion=True, f=True)
+
+        # import rig
+        cmds.file(rig_file, i=True)
+
+        # import shaders
+        cmds.file(mtls_file, i=True)
+
+        ################
+        # link shaders #
+        ################
+
+        # open linker file
+        with open(link_file) as data_file:
+            link_data = json.load(data_file)
+
+        for i in link_data:
+            cmds.select(i["transform"])
+            cmds.hyperShade(assign=i["mtl"])
+
+        # save as assembly
+        cmds.file(rename=self.resolve_output())
+        cmds.file(save=True, type="mayaBinary")
+        cmds.file(rename="null")
+
+
+    def _get_files(self, extractor, location):
+        publishes = os.listdir(location)
+        files = []
+
+        # get look and alembic publishes
+        for i in publishes:
+            if extractor + "_" in i:
+                files.append(i)
+
+        return files
