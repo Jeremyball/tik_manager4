@@ -8,7 +8,7 @@ import os
 
 from tik_manager4.dcc.extract_core import ExtractCore
 from tik_manager4.dcc.maya import utils
-
+from tik_manager4.dcc.maya import flux_utility
 
 class Assembly(ExtractCore):
     """Extract Assembly from Maya scene."""
@@ -28,10 +28,10 @@ class Assembly(ExtractCore):
 
         # get files
         looks = self._get_files("LOOK", self.extract_folder)
-        alembics = self._get_files("ALEMBIC", self.extract_folder)
+        model = self._get_files("MB", self.extract_folder)
 
         # get latest alembics, mtls and link
-        abc_file = self.extract_folder + "/" + alembics[-1]
+        model_file = self.extract_folder + "/" + model[-1]
         mtls_file = self.extract_folder + "/" + looks[-1]
         link_file = self.extract_folder + "/" + looks[-2]
 
@@ -41,10 +41,8 @@ class Assembly(ExtractCore):
         # open new scene
         cmds.file(new=True, ignoreVersion=True, f=True)
 
-        # import alembic
-        cmds.AbcImport(
-            abc_file, mode="import", fitTimeRange=False, setToStartFrame=False
-        )
+        # import model
+        cmds.file(model_file, i=True)
 
         # import shaders
         cmds.file(mtls_file, i=True)

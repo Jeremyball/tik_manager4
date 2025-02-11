@@ -5,6 +5,7 @@ from maya import OpenMaya as om
 
 from tik_manager4.dcc.extract_core import ExtractCore
 from tik_manager4.dcc.maya import utils
+from tik_manager4.dcc.maya import flux_utility
 
 
 class Alembic(ExtractCore):
@@ -20,13 +21,6 @@ class Alembic(ExtractCore):
     def __init__(self):
         _ranges = utils.get_ranges()
         exposed_settings = {
-            "Model":{
-                "anim_publish":{
-                    "display_name": "Anim Publish",
-                    "type": "boolean",
-                    "value": True,
-                }
-            },
             "Animation": {
                 "start_frame": {
                     "display_name": "Start Frame",
@@ -97,6 +91,7 @@ class Alembic(ExtractCore):
         om.MGlobal.displayInfo("Alembic Extractor loaded")
 
         self._extension = ".abc"
+
         # Category names must match to the ones in category_definitions.json (case sensitive)
         self.category_functions = {
             "Model": self._extract_model,
