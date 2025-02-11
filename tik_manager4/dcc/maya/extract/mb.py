@@ -16,7 +16,7 @@ class MayaBinary(ExtractCore):
     def __init__(self):
         super(MayaBinary, self).__init__()
         self.extension = ".mb"
-        self.category_functions = {"Rig": self._extract_rig}       
+        self.category_functions = {"Rig": self._extract_rig}
 
     def _extract_rig(self):
         """Extract method for any non-specified category"""
@@ -24,8 +24,10 @@ class MayaBinary(ExtractCore):
         # remove all materials
         try:
             # non destructive shader remove
-            mel.eval('deleteShadingGroupsAndMaterials')
-            mel.eval('hyperShadePanelMenuCommand("hyperShadePanel1", "deleteUnusedNodes");')
+            mel.eval("deleteShadingGroupsAndMaterials")
+            mel.eval(
+                'hyperShadePanelMenuCommand("hyperShadePanel1", "deleteUnusedNodes");'
+            )
 
         except:
             pass
@@ -33,7 +35,7 @@ class MayaBinary(ExtractCore):
         # select asset
         cmds.select("asset")
 
-        # export asset 
+        # export asset
         cmds.file(
             self.resolve_output(),
             force=True,
@@ -44,4 +46,22 @@ class MayaBinary(ExtractCore):
             constraints=True,
             expressions=True,
             shader=False,
+        )
+
+    def _extract_default(self):
+        print("\n\n\nusing this one\n\n\n")
+        # select asset
+        cmds.select("asset")
+
+        # export asset
+        cmds.file(
+            self.resolve_output(),
+            force=True,
+            typ="mayaBinary",
+            exportSelected=True,
+            preserveReferences=True,
+            constructionHistory=True,
+            constraints=True,
+            expressions=True,
+            shader=True,
         )
