@@ -14,6 +14,7 @@ class MayaBinary(ExtractCore):
 
     nice_name = "Maya Binary"
     color = (255, 255, 255)
+    script_name = "MB"
 
     def __init__(self):
         exposed_settings = {
@@ -52,7 +53,7 @@ class MayaBinary(ExtractCore):
                     "type": "boolean",
                     "value": False,
                 },
-            },                           
+            },
         }
 
         super().__init__(exposed_settings=exposed_settings)
@@ -63,20 +64,20 @@ class MayaBinary(ExtractCore):
             "Rig": self._extract_rig,
             "Model": self._extract_model,
             "Layout": self._extract_layout,
-            "Animation": self._extract_animation,            
+            "Animation": self._extract_animation,
         }
 
     def _extract_model(self):
 
         settings = self.settings.get("Model")
         _file_path = self.resolve_output()
-        
 
         ##################
         # add flux attrs #
         ##################
 
         flux_utility.attr_config(settings)
+        flux_utility.add_attr("string", "extract_script", "asset", self.script_name, True)    
 
         #######
         # out #
@@ -116,6 +117,7 @@ class MayaBinary(ExtractCore):
         ##################
 
         flux_utility.attr_config(settings)
+        flux_utility.add_attr("string", "extract_script", "asset", self.script_name, True)    
 
         #######
         # out #
@@ -136,7 +138,7 @@ class MayaBinary(ExtractCore):
         )
 
     def _extract_layout(self):
-        
+
         settings = self.settings.get("Layout")
 
         ##################
@@ -144,6 +146,7 @@ class MayaBinary(ExtractCore):
         ##################
 
         flux_utility.attr_config(settings)
+        flux_utility.add_attr("string", "extract_script", "asset", self.script_name, True)    
 
         #######
         # out #
@@ -168,7 +171,7 @@ class MayaBinary(ExtractCore):
         ####################
         # gather animation #
         ####################
-        
+
         to_publish = []
 
         for transform in cmds.ls(type="transform"):
@@ -176,13 +179,12 @@ class MayaBinary(ExtractCore):
                 if transform.count(":") == 1:
                     to_publish.append(transform)
 
-        for camera in cmds.ls(type = "camera"):
+        for camera in cmds.ls(type="camera"):
             if "render_cam" in camera:
                 to_publish.append(camera)
 
-        cmds.select(cl=True)    
+        cmds.select(cl=True)
         cmds.select(to_publish)
-
 
         #######
         # out #
@@ -199,5 +201,5 @@ class MayaBinary(ExtractCore):
             expressions=True,
             shader=True,
         )
-
-
+        
+        cmds.select(cl=True)

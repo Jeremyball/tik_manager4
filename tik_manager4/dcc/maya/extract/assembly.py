@@ -47,6 +47,9 @@ class Assembly(ExtractCore):
         # import shaders
         cmds.file(mtls_file, i=True)
 
+        # set .extract_script to ASSEMBLY
+        cmds.setAttr("asset.extract_script", "ASSEMBLY", type="string")        
+
         ################
         # link shaders #
         ################
