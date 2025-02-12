@@ -1,4 +1,5 @@
 import maya.cmds as cmds
+import maya.mel as mel
 
 
 def colours_tags():
@@ -27,7 +28,18 @@ def add_attr(type, attr, thing, value, cb):
         cmds.setAttr(thing + "." + attr, e=1, cb=1)
 
 
-def attr_config(settings):
+def attr_config(settings, input=False):
     add_attr("bool", "extract_abc", "asset", settings.get("abc_publish"), True)
     add_attr("bool", "extract_anim", "asset", settings.get("anim_publish"), True)
     add_attr("bool", "tik_publish", "asset", True, True)
+
+    if input:
+        add_attr("string", "extract_script", "asset", input, True)
+
+
+def colour_load(c, thing):
+    cmds.setAttr(thing + ".useOutlinerColor", 1)
+    cmds.setAttr(thing + ".outlinerColor", c[0], c[1], c[2])
+
+    # refresh outliner
+    mel.eval('AEdagNodeCommonRefreshOutliners();')

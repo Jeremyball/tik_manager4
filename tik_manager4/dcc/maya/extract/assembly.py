@@ -26,6 +26,8 @@ class Assembly(ExtractCore):
 
     def _extract_model(self):
 
+        asset_colour = [.2,.9,.2]
+
         # get files
         looks = self._get_files("LOOK", self.extract_folder)
         model = self._get_files("MB", self.extract_folder)
@@ -49,6 +51,9 @@ class Assembly(ExtractCore):
 
         # set .extract_script to ASSEMBLY
         cmds.setAttr("asset.extract_script", "ASSEMBLY", type="string")        
+
+        # colour asset group
+        flux_utility.colour_load(asset_colour, "asset")
 
         ################
         # link shaders #

@@ -68,7 +68,7 @@ class MayaBinary(ExtractCore):
         }
 
     def _extract_model(self):
-
+        asset_colour = [1,.4,.4]
         settings = self.settings.get("Model")
         _file_path = self.resolve_output()
 
@@ -76,12 +76,13 @@ class MayaBinary(ExtractCore):
         # add flux attrs #
         ##################
 
-        flux_utility.attr_config(settings)
-        flux_utility.add_attr("string", "extract_script", "asset", self.script_name, True)    
+        flux_utility.attr_config(settings, input=self.script_name)
 
         #######
         # out #
         #######
+
+        flux_utility.colour_load(asset_colour, "asset")
 
         cmds.select("asset")
 
@@ -95,9 +96,14 @@ class MayaBinary(ExtractCore):
             shader=0,
         )
 
+        # set colour back
+        cmds.setAttr("asset.useOutlinerColor", 0)
+        
+
     def _extract_rig(self):
 
         settings = self.settings.get("Rig")
+        asset_colour = [.9,.9,.5]
 
         ###############
         # exract prep #
@@ -116,12 +122,13 @@ class MayaBinary(ExtractCore):
         # add flux attrs #
         ##################
 
-        flux_utility.attr_config(settings)
-        flux_utility.add_attr("string", "extract_script", "asset", self.script_name, True)    
-
+        flux_utility.attr_config(settings, input=self.script_name)
+   
         #######
         # out #
         #######
+
+        flux_utility.colour_load(asset_colour, "asset")
 
         cmds.select("asset")
 
@@ -140,17 +147,19 @@ class MayaBinary(ExtractCore):
     def _extract_layout(self):
 
         settings = self.settings.get("Layout")
+        asset_colour = [.4,.9,.9]
 
         ##################
         # add flux attrs #
         ##################
 
-        flux_utility.attr_config(settings)
-        flux_utility.add_attr("string", "extract_script", "asset", self.script_name, True)    
+        flux_utility.attr_config(settings, input=self.script_name)
 
         #######
         # out #
         #######
+
+        flux_utility.colour_load(asset_colour, "asset")
 
         cmds.select("asset")
 
@@ -166,7 +175,12 @@ class MayaBinary(ExtractCore):
             shader=True,
         )
 
+        # set colour back
+        cmds.setAttr("asset.useOutlinerColor", 0)        
+
     def _extract_animation(self):
+
+
 
         ####################
         # gather animation #
@@ -190,6 +204,7 @@ class MayaBinary(ExtractCore):
         # out #
         #######
 
+
         cmds.file(
             self.resolve_output(),
             force=True,
@@ -203,3 +218,5 @@ class MayaBinary(ExtractCore):
         )
         
         cmds.select(cl=True)
+        
+      
