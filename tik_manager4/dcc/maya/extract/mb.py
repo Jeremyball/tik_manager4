@@ -52,19 +52,7 @@ class MayaBinary(ExtractCore):
                     "type": "boolean",
                     "value": False,
                 },
-            },           
-            "Animation": {
-                "anim_publish": {
-                    "display_name": "Publish with a Anim publish",
-                    "type": "boolean",
-                    "value": False,
-                },
-                "abc_publish": {
-                    "display_name": "Publish as an .abc",
-                    "type": "boolean",
-                    "value": False,
-                },
-            },                             
+            },                           
         }
 
         super().__init__(exposed_settings=exposed_settings)
@@ -88,7 +76,7 @@ class MayaBinary(ExtractCore):
         # add flux attrs #
         ##################
 
-        self.attr_config(settings)
+        flux_utility.attr_config(settings)
 
         #######
         # out #
@@ -127,7 +115,7 @@ class MayaBinary(ExtractCore):
         # add flux attrs #
         ##################
 
-        self.attr_config(settings)
+        flux_utility.attr_config(settings)
 
         #######
         # out #
@@ -155,7 +143,7 @@ class MayaBinary(ExtractCore):
         # add flux attrs #
         ##################
 
-        self.attr_config(settings)
+        flux_utility.attr_config(settings)
 
         #######
         # out #
@@ -177,14 +165,6 @@ class MayaBinary(ExtractCore):
 
     def _extract_animation(self):
 
-        settings = self.settings.get("Animation")
-
-        ##################
-        # add flux attrs #
-        ##################
-
-        self.attr_config(settings)
-
         ####################
         # gather animation #
         ####################
@@ -199,7 +179,8 @@ class MayaBinary(ExtractCore):
         for camera in cmds.ls(type = "camera"):
             if "render_cam" in camera:
                 to_publish.append(camera)
-            
+
+        cmds.select(cl=True)    
         cmds.select(to_publish)
 
 
