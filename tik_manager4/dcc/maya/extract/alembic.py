@@ -96,9 +96,6 @@ class Alembic(ExtractCore):
         self.category_functions = {
             "Model": self._extract_model,
             "Animation": self._extract_animation,
-            "Fx": self._extract_fx,
-            "Layout": self._extract_layout,
-            "Lighting": self._extract_lighting,
         }
 
     def _extract_model(self):
@@ -119,29 +116,3 @@ class Alembic(ExtractCore):
         command = f"{_flags} -file {_file_path}"
         cmds.AbcExport(j=command)
 
-    def _extract_fx(self):
-        """Extract method for fx category"""
-        # identical to animation
-        self._extract_animation()
-
-    def _extract_layout(self):
-        """Extract method for fx category"""
-        settings = self.settings.get("Layout")
-        _file_path = self.resolve_output()
-        _start_frame = settings.get("start_frame")
-        _end_frame = settings.get("end_frame")
-        _flags = f"-frameRange {_start_frame} {_end_frame} -step 1.0 -uvWrite -worldSpace -writeUVSets -renderableOnly -writeVisibility -dataFormat ogawa"
-        command = f"{_flags} -file {_file_path}"
-        cmds.AbcExport(j=command)
-
-    def _extract_lighting(self):
-        """Extract method for fx category"""
-        # identical to layout
-        self._extract_layout()
-
-    def _extract_default(self):
-        """Extract method for any non-specified category"""
-        _file_path = self.resolve_output()
-        _flags = "-frameRange 0 0 -ro -uvWrite -worldSpace -writeUVSets -renderableOnly -writeVisibility -dataFormat ogawa"
-        command = "{0} -file {1}".format(_flags, _file_path)
-        cmds.AbcExport(j=command)

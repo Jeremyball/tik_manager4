@@ -52,7 +52,19 @@ class MayaBinary(ExtractCore):
                     "type": "boolean",
                     "value": False,
                 },
-            },            
+            },           
+            "Animation": {
+                "anim_publish": {
+                    "display_name": "Publish with a Anim publish",
+                    "type": "boolean",
+                    "value": False,
+                },
+                "abc_publish": {
+                    "display_name": "Publish as an .abc",
+                    "type": "boolean",
+                    "value": False,
+                },
+            },                             
         }
 
         super().__init__(exposed_settings=exposed_settings)
@@ -63,18 +75,20 @@ class MayaBinary(ExtractCore):
             "Rig": self._extract_rig,
             "Model": self._extract_model,
             "Layout": self._extract_layout,
+            "Animation": self._extract_animation,            
         }
 
     def _extract_model(self):
 
         settings = self.settings.get("Model")
         _file_path = self.resolve_output()
+        
 
         ##################
         # add flux attrs #
         ##################
 
-        flux_utility.attr_config(settings)
+        self.attr_config(settings)
 
         #######
         # out #
@@ -113,7 +127,7 @@ class MayaBinary(ExtractCore):
         # add flux attrs #
         ##################
 
-        flux_utility.attr_config(settings)
+        self.attr_config(settings)
 
         #######
         # out #
@@ -141,7 +155,7 @@ class MayaBinary(ExtractCore):
         # add flux attrs #
         ##################
 
-        flux_utility.attr_config(settings)
+        self.attr_config(settings)
 
         #######
         # out #
@@ -160,3 +174,49 @@ class MayaBinary(ExtractCore):
             expressions=True,
             shader=True,
         )
+
+    def _extract_animation(self):
+
+        settings = self.settings.get("Animation")
+
+        ##################
+        # add flux attrs #
+        ##################
+
+        self.attr_config(settings)
+
+        ####################
+        # gather animation #
+        ####################
+        
+        to_publish = []
+
+        for transform in cmds.ls(type="transform"):
+            if cmds.attributeQuery("tik_publish", node=transform, exists=True):
+                if transform.count(":") == 1:
+                    to_publish.append(transform)
+
+        for camera in cmds.ls(type = "camera"):
+            if "render_cam" in camera:
+                to_publish.append(camera)
+            
+        cmds.select(to_publish)
+
+
+        #######
+        # out #
+        #######
+
+        cmds.file(
+            self.resolve_output(),
+            force=True,
+            typ="mayaBinary",
+            exportSelected=True,
+            preserveReferences=True,
+            constructionHistory=True,
+            constraints=True,
+            expressions=True,
+            shader=True,
+        )
+
+
