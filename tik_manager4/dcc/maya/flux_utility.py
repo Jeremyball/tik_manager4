@@ -5,47 +5,28 @@ def colours_tags():
     pass
 
 
-def add_bool_attr(attr, thing, value):
-    for i in cmds.ls(thing):
-        if cmds.nodeType(i) == "transform":
+def add_attr(type, attr, thing, value,cb):
 
-            if not cmds.attributeQuery(attr, node=i, exists=True):
-                cmds.addAttr(i, ln=attr, at="bool")
+    if not cmds.attributeQuery(attr, node=thing, exists=True):
+        if type == "bool":
+            cmds.addAttr(thing, ln=attr, at="bool")
+        if type ==  "int":
+            cmds.addAttr(thing, ln=attr, at="long")    
+        if type == "string":
+            cmds.addAttr(thing, ln=attr, dt="string")
 
-            cmds.setAttr(i + "." + attr, e=True, k=False)
-            cmds.setAttr(i + "." + attr, e=1, cb=1)
-            cmds.setAttr(i + "." + attr, value)
+    cmds.setAttr(thing + "." + attr, e=True, k=False)
+    
+    if type == "string":
+        cmds.setAttr(thing + "." + attr, value, type="string")
+        cmds.setAttr(thing + "." + attr, e=True, k=False)      
+    else:          
+        cmds.setAttr(thing + "." + attr, value)
 
+    if cb:
+        cmds.setAttr(thing + "." + attr, e=1, cb=1)
 
-def add_int_attr(attr, thing, value):
-    for i in cmds.ls(thing):
-        if cmds.nodeType(i) == "transform":
-
-            if not cmds.attributeQuery(attr, node=i, exists=True):
-                cmds.addAttr(i, ln=attr, at="long")
-
-            cmds.setAttr(i + "." + attr, e=True, k=False)
-            cmds.setAttr(i + "." + attr, e=1, cb=1)
-            cmds.setAttr(i + "." + attr, value)
-
-
-def add_attr(type, attr, thing, value):
-    for i in cmds.ls(thing):
-        if cmds.nodeType(i) == "transform":
-
-            if not cmds.attributeQuery(attr, node=i, exists=True):
-                if type == "bool":
-                    cmds.addAttr(i, ln=attr, at="bool")
-                if type ==  "int":
-                    cmds.addAttr(i, ln=attr, at="long")    
-                if type == "string":
-                    cmds.addAttr(i, ln=attr, dt="string")
-
-            cmds.setAttr(i + "." + attr, e=True, k=False)
-            
-            if type == "string":
-                cmds.setAttr(i + "." + attr, value, type="string")
-                cmds.setAttr(i + "." + attr, e=True, k=False)      
-            else:          
-                cmds.setAttr(i + "." + attr, e=1, cb=1)
-                cmds.setAttr(i + "." + attr, value)
+def attr_config(settings):
+    add_attr("bool", "extract_abc", "asset", settings.get("abc_publish"), True)
+    add_attr("bool", "extract_anim", "asset", settings.get("anim_publish"), True)
+    add_attr("bool", "tik_publish", "asset", True, True)

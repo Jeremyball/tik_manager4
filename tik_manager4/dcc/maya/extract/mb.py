@@ -7,6 +7,7 @@ import maya.mel as mel
 from tik_manager4.dcc.extract_core import ExtractCore
 from tik_manager4.dcc.maya import flux_utility
 
+
 # The Collector will only collect classes inherit ExtractCore
 class MayaBinary(ExtractCore):
     """Extract Source Maya scene."""
@@ -15,69 +16,111 @@ class MayaBinary(ExtractCore):
     color = (255, 255, 255)
 
     def __init__(self):
-        self.extension = ".mb"
-        self.category_functions = {"Rig": self._extract_rig,"Model": self._extract_model}
-        
         exposed_settings = {
             "Model": {
                 "anim_publish": {
-                    "display_name": "Anim Publish",
+                    "display_name": "Publish with a Anim publish",
                     "type": "boolean",
                     "value": True,
                 },
                 "abc_publish": {
-                    "display_name": "Abc Publish",
+                    "display_name": "Publish as an .abc",
+                    "type": "boolean",
+                    "value": False,
+                },
+            },
+            "Rig": {
+                "anim_publish": {
+                    "display_name": "Publish with a Anim publish",
+                    "type": "boolean",
+                    "value": True,
+                },
+                "abc_publish": {
+                    "display_name": "Publish as an .abc",
                     "type": "boolean",
                     "value": True,
                 },
             },
-        }        
-        
+            "Layout": {
+                "anim_publish": {
+                    "display_name": "Publish with a Anim publish",
+                    "type": "boolean",
+                    "value": True,
+                },
+                "abc_publish": {
+                    "display_name": "Publish as an .abc",
+                    "type": "boolean",
+                    "value": False,
+                },
+            },            
+        }
+
         super().__init__(exposed_settings=exposed_settings)
 
+        self.extension = ".mb"
+
+        self.category_functions = {
+            "Rig": self._extract_rig,
+            "Model": self._extract_model,
+            "Layout": self._extract_layout,
+        }
+
     def _extract_model(self):
-        """Extract method for model category"""
 
         settings = self.settings.get("Model")
-        version_number = int(self.extract_name.split("_v")[1])
         _file_path = self.resolve_output()
 
         ##################
         # add flux attrs #
         ##################
 
-        flux_utility.add_bool_attr("extract_abc", "asset", settings.get("abc_publish"))
+        flux_utility.attr_config(settings)
 
-        cmds.select("fege")
-        
-        if not cmds.attributeQuery("test", node="asset", exists=True):
-            cmds.addAttr("asset", ln="test", at="bool")
+        #######
+        # out #
+        #######
 
+        cmds.select("asset")
 
-        #############
-        # export mb #
-        #############
-
-        cmds.file(_file_path, options="v=1;", typ="mayaBinary", es=True, constructionHistory=True, f=1, shader=0)
+        cmds.file(
+            _file_path,
+            options="v=1;",
+            typ="mayaBinary",
+            es=True,
+            constructionHistory=True,
+            f=1,
+            shader=0,
+        )
 
     def _extract_rig(self):
-        """Extract method for any non-specified category"""
 
-        # remove all materials
+        settings = self.settings.get("Rig")
+
+        ###############
+        # exract prep #
+        ###############
+
         try:
             # non destructive shader remove
             mel.eval("deleteShadingGroupsAndMaterials")
             mel.eval(
                 'hyperShadePanelMenuCommand("hyperShadePanel1", "deleteUnusedNodes");'
             )
-
         except:
             pass
 
-        # select asset
+        ##################
+        # add flux attrs #
+        ##################
+
+        flux_utility.attr_config(settings)
+
+        #######
+        # out #
+        #######
+
         cmds.select("asset")
 
-        # export asset
         cmds.file(
             self.resolve_output(),
             force=True,
@@ -90,11 +133,22 @@ class MayaBinary(ExtractCore):
             shader=False,
         )
 
-    def _extract_default(self):
-        # select asset
+    def _extract_layout(self):
+        
+        settings = self.settings.get("Layout")
+
+        ##################
+        # add flux attrs #
+        ##################
+
+        flux_utility.attr_config(settings)
+
+        #######
+        # out #
+        #######
+
         cmds.select("asset")
 
-        # export asset
         cmds.file(
             self.resolve_output(),
             force=True,
